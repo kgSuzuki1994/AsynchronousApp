@@ -19,10 +19,11 @@ namespace AsynchronousApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = GetData();
+            var t = new System.Threading.Thread(GetData);
+            t.Start();
         }
 
-        private List<DTO> GetData()
+        private void GetData()
         {
             var result = new List<DTO>();
             for (int i = 0; i < 5; i++)
@@ -31,7 +32,10 @@ namespace AsynchronousApp
                 result.Add(new DTO(i.ToString(), "Name" + i));
             }
 
-            return result;
+            this.Invoke((Action)delegate ()
+            {
+                dataGridView1.DataSource = result;
+            });
         }
     }
 }
