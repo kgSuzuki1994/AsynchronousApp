@@ -19,12 +19,12 @@ namespace AsynchronousApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var t = new System.Threading.Thread(GetData);
-            t.Start();
+            System.Threading.ThreadPool.QueueUserWorkItem(GetData);
         }
 
-        private void GetData()
+        private void GetData(object o)
         {
+
             var result = new List<DTO>();
             for (int i = 0; i < 5; i++)
             {
