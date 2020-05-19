@@ -19,12 +19,15 @@ namespace AsynchronousApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            System.Threading.ThreadPool.QueueUserWorkItem(GetData);
+            var context = TaskScheduler.FromCurrentSynchronizationContext();
+            Task.Run(() => GetData()).ContinueWith(x =>
+            {
+                dataGridView1.DataSource = x.Result;
+            }, context);
         }
 
-        private void GetData(object o)
+        private List<DTO> GetData()
         {
-
             var result = new List<DTO>();
             for (int i = 0; i < 5; i++)
             {
@@ -32,10 +35,7 @@ namespace AsynchronousApp
                 result.Add(new DTO(i.ToString(), "Name" + i));
             }
 
-            this.Invoke((Action)delegate ()
-            {
-                dataGridView1.DataSource = result;
-            });
+            return result;
         }
     }
 }
