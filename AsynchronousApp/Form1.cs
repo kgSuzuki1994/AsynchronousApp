@@ -12,6 +12,7 @@ namespace AsynchronousApp
 {
     public partial class Form1 : Form
     {
+        System.Threading.CancellationTokenSource _token;
         private DataBase _dataBase = new DataBase();
         public Form1()
         {
@@ -20,20 +21,25 @@ namespace AsynchronousApp
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = await Task.Run(() =>  GetData());
-
-            if (_dataBase.Iscancel)
+            try
+            {
+                _token = new System.Threading.CancellationTokenSource();
+                dataGridView1.DataSource = await Task.Run(() =>  _dataBase.GetData(_token.Token), _token.Token);
+                MessageBox.Show("完了");
+            }
+            catch (OperationCanceledException o)
             {
                 MessageBox.Show("キャンセルされました");
             }
-            else
+            finally
             {
-                MessageBox.Show("完了");
+                _token.Dispose();
+                _token = null;
             }
         }
         private void CancelButton_Click(object sender, EventArgs e)
         {
-            _dataBase.Cancel();
+            _token?.Cancel();
         }
     }
 }

@@ -10,23 +10,12 @@ namespace AsynchronousApp
     {
         private bool _isCancel = false;
 
-        internal bool Iscancel {
-            get {
-                return _isCancel;
-            }
-        }
-
-        internal List<DTO> GetData()
+        internal List<DTO> GetData(System.Threading.CancellationToken token)
         {
-            _isCancel = false;
-
             var result = new List<DTO>();
             for (int i = 0; i < 5; i++)
             {
-                if (_isCancel)
-                {
-                    return null;
-                }
+                token.ThrowIfCancellationRequested();
                 System.Threading.Thread.Sleep(1000);
                 result.Add(new DTO(i.ToString(), "Name" + i));
             }
@@ -34,9 +23,6 @@ namespace AsynchronousApp
             return result;
         }
 
-        internal void Cancel()
-        {
-            _isCancel = true;
-        }
+
     }
 }
