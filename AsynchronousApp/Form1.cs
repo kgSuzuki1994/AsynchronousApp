@@ -17,13 +17,9 @@ namespace AsynchronousApp
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            var context = TaskScheduler.FromCurrentSynchronizationContext();
-            Task.Run(() => GetData()).ContinueWith(x =>
-            {
-                dataGridView1.DataSource = x.Result;
-            }, context);
+            dataGridView1.DataSource = await Task.Run(() =>  GetData());
         }
 
         private List<DTO> GetData()
